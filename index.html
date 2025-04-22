@@ -79,27 +79,103 @@
     function checkDeprescribing() {
       const goals = document.getElementById("goals").value;
       const prognosis = document.getElementById("prognosis").value;
-      const medications = document.getElementById("medications").value.toLowerCase();
+      const medications = document.getElementById("medications").value.toLowerCase().split(",").map(med => med.trim());
 
       let recommendations = "\u2728 Deprescribing Recommendations:\n\n";
 
-      if (goals === "comfort" && prognosis === "poor") {
-        if (medications.includes("atorvastatin")) {
-          recommendations += "\u2022 \u2696 Atorvastatin: Consider deprescribing. No cardiovascular benefit in patients with < 1 year life expectancy. May cause muscle pain or weakness. (eTG)\n\n";
+      const classData = {
+        "statin": {
+          recommendation: "Statins like atorvastatin or simvastatin may be deprescribed in patients with limited life expectancy (<1 year) where primary prevention is no longer beneficial.",
+          severity: "Moderate - While statins help in reducing cardiovascular risk, in end-of-life scenarios, the burden may outweigh the benefit. Continuing statins could be decreasing comfort and increasing medication burden for patients with a poor prognosis.",
+          reference: "eTG, AMH",
+          link: "https://www.etg.org.au/"
+        },
+        "acetylcholinesterase inhibitor": {
+          recommendation: "Drugs like donepezil or rivastigmine may be deprescribed in end-stage dementia when no functional improvement is expected. Gradual taper is advised.",
+          severity: "High - These medications may be contributing to adverse effects without meaningful benefit, impacting QOL. Discontinuing these drugs can enhance comfort by reducing confusion, sedation, and other side effects.",
+          reference: "MATCH-D, AMH",
+          link: "https://www.amh.net.au/"
+        },
+        "antiplatelet": {
+          recommendation: "Agents like aspirin or clopidogrel used for primary prevention may be deprescribed if bleeding risk outweighs benefit.",
+          severity: "High - Reduces bleeding risks and may be burdensome if continued in patients with limited prognosis. The continued use of antiplatelets can contribute to a higher bleeding risk, which may significantly impact patient comfort.",
+          reference: "eTG, AMH",
+          link: "https://www.etg.org.au/"
+        },
+        "biguanide": {
+          recommendation: "Metformin should be reviewed in frail elderly patients, especially if eGFR <30 mL/min or low HbA1c targets.",
+          severity: "Moderate - May contribute to lactic acidosis in frail patients with kidney dysfunction, decreasing overall safety. In palliative care, these medications should be reconsidered as they may pose risks without significant benefits.",
+          reference: "eTG",
+          link: "https://www.etg.org.au/"
+        },
+        "ppi": {
+          recommendation: "Proton pump inhibitors like omeprazole or esomeprazole may be stepped down or ceased if indication has resolved (e.g. GORD).",
+          severity: "Low - These medications should be reviewed for indications, but stopping may not significantly alter QOL. In palliative care, discontinuation may help reduce medication burden without affecting the overall comfort.",
+          reference: "AMH",
+          link: "https://www.amh.net.au/"
+        },
+        "ccb": {
+          recommendation: "Calcium channel blockers like amlodipine may contribute to hypotension or falls in frail patients. Review BP targets.",
+          severity: "High - Contributes to hypotension or falls in frail patients, decreasing functional ability and safety. Deprescribing these agents may prevent adverse effects such as falls and dizziness, enhancing overall patient comfort.",
+          reference: "eTG",
+          link: "https://www.etg.org.au/"
+        },
+        "insulin": {
+          recommendation: "Insulin may be deprescribed or reduced in elderly/frail if HbA1c target is relaxed or risk of hypoglycaemia is high.",
+          severity: "Moderate - Reducing insulin or adjusting doses in elderly patients may reduce risks of hypoglycemia and improve QOL. In palliative care, reducing insulin can help prevent unnecessary complications, improving comfort.",
+          reference: "eTG, AMH",
+          link: "https://www.etg.org.au/"
+        },
+        "anticoagulant": {
+          recommendation: "Agents like warfarin or DOACs may be deprescribed in limited prognosis unless essential (e.g. mechanical valves).",
+          severity: "High - May significantly impact QOL due to bleeding risks, especially in patients with limited life expectancy. Deprescribing these agents can reduce the risk of bleeding complications, improving safety and comfort.",
+          reference: "AMH",
+          link: "https://www.amh.net.au/"
+        },
+        "benzodiazepine": {
+          recommendation: "Benzodiazepines may be deprescribed due to risks of falls and sedation, unless indicated for terminal agitation. Gradual taper advised.",
+          severity: "High - These medications increase the risk of falls and sedation, which can significantly decrease QOL in palliative patients. Deprescribing may reduce sedation and improve mobility, enhancing the patient's comfort and independence.",
+          reference: "AMH, Maudsley",
+          link: "https://www.amh.net.au/ | https://www.cambridge.org/core/journals/the-british-journal-of-psychiatry/article/abs/benzodiazepines-in-older-people/"
+        },
+        "ssri": {
+          recommendation: "SSRIs may be tapered and ceased if no longer beneficial, especially in palliative settings. Watch for discontinuation syndrome.",
+          severity: "Moderate - Potential for discontinuation syndrome; however, stopping may improve cognitive clarity and overall QOL. Deprescribing may also help reduce sedation, improve clarity, and ease overall comfort.",
+          reference: "Maudsley",
+          link: "https://www.cambridge.org/core/journals/the-british-journal-of-psychiatry/article/abs/benzodiazepines-in-older-people/"
+        },
+        "bisphosphonate": {
+          recommendation: "Bisphosphonates like alendronate may be stopped after 5 years or in patients near end of life with low fracture risk.",
+          severity: "Low - May be unnecessary in patients near the end of life, without contributing significantly to QOL. Discontinuing bisphosphonates may reduce medication burden without compromising comfort.",
+          reference: "AMH",
+          link: "https://www.amh.net.au/"
         }
-        if (medications.includes("donepezil")) {
-          recommendations += "\u2022 \u2696 Donepezil: Consider gradual tapering. Limited cognitive benefit in end-stage dementia. May cause GI upset. (MATCH-D Criteria)\n\n";
-        }
-        if (medications.includes("aspirin")) {
-          recommendations += "\u2022 \u2696 Aspirin: Reassess indication for primary prevention. Risk of GI bleeding may outweigh benefit in palliative care. (AMH)\n\n";
-        }
-        if (medications.includes("ssri")) {
-          recommendations += "\u2022 \u2696 SSRI (e.g., sertraline, escitalopram): Taper slowly over weeks/months. Avoid abrupt cessation to reduce withdrawal symptoms. (Maudsley Guidelines)\n\n";
-        }
-      }
+      };
+
+      const classKeywords = {
+        "statin": ["atorvastatin", "simvastatin", "rosuvastatin", "pravastatin"],
+        "acetylcholinesterase inhibitor": ["donepezil", "rivastigmine", "galantamine"],
+        "antiplatelet": ["aspirin", "clopidogrel", "dipyridamole"],
+        "biguanide": ["metformin"],
+        "ppi": ["omeprazole", "esomeprazole", "pantoprazole", "rabeprazole"],
+        "ccb": ["amlodipine", "felodipine", "nifedipine"],
+        "insulin": ["insulin glargine", "insulin aspart", "insulin detemir"],
+        "anticoagulant": ["warfarin", "apixaban", "rivaroxaban", "dabigatran"],
+        "benzodiazepine": ["diazepam", "temazepam", "oxazepam", "lorazepam"],
+        "ssri": ["sertraline", "fluoxetine", "escitalopram", "citalopram"],
+        "bisphosphonate": ["alendronate", "risedronate", "zoledronic acid"]
+      };
+
+      medications.forEach(med => {
+        Object.entries(classKeywords).forEach(([drugClass, names]) => {
+          if (names.some(name => med.includes(name))) {
+            recommendations += `• ⚖️ ${drugClass.charAt(0).toUpperCase() + drugClass.slice(1)}: ${classData[drugClass].recommendation}\nSeverity: ${classData[drugClass].severity}\nReference: ${classData[drugClass].reference}\nLink: ${classData[drugClass].link}\n\n`;
+          }
+        });
+      });
 
       if (recommendations === "\u2728 Deprescribing Recommendations:\n\n") {
-        recommendations += "No specific deprescribing alerts based on your entries. Please use clinical judgment and refer to current guidelines.";
+        recommendations += "No specific deprescribing alerts found. Please refer to clinical judgment and local guidelines.";
       }
 
       document.getElementById("output").textContent = recommendations;
@@ -107,29 +183,12 @@
   </script>
 </head>
 <body>
-  <h1>✨ Deprescribing Compass ✨</h1>
-
+  <h1>Deprescribing Compass - Pharmacist Tool</h1>
   <div class="form-section">
-    <label for="goals">Patient Goals of Care:</label>
-    <select id="goals">
-      <option value="comfort">Comfort-focused</option>
-      <option value="curative">Curative</option>
-      <option value="unclear">Unclear</option>
-    </select>
-
-    <label for="prognosis">Prognosis:</label>
-    <select id="prognosis">
-      <option value="poor">Poor (&lt; 6 months)</option>
-      <option value="moderate">Moderate (6-24 months)</option>
-      <option value="good">Good (&gt; 2 years)</option>
-    </select>
-
-    <label for="medications">Enter Medication List (comma-separated):</label>
-    <textarea id="medications" rows="4" placeholder="e.g., atorvastatin, donepezil, aspirin, SSRI"></textarea>
-
-    <button onclick="checkDeprescribing()">Get Recommendations ✨</button>
+    <label for="medications">Enter Medications (comma separated):</label>
+    <textarea id="medications" rows="3"></textarea>
+    <button onclick="checkDeprescribing()">Check Deprescribing</button>
   </div>
-
   <div id="output"></div>
 </body>
 </html>
