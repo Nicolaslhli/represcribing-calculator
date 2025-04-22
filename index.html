@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Deprescribing Compass - Pharmacist Tool</title>
+  <script>
+    function checkDeprescribing() {
+      const goals = document.getElementById("goals").value;
+      const prognosis = document.getElementById("prognosis").value;
+      const medications = document.getElementById("medications").value.toLowerCase();
+
+      let recommendations = "";
+
+      if (goals === "comfort" && prognosis === "poor") {
+        if (medications.includes("atorvastatin")) {
+          recommendations += "- Consider deprescribing atorvastatin: no short-term benefit, potential for adverse effects.\n";
+        }
+        if (medications.includes("donepezil")) {
+          recommendations += "- Consider deprescribing donepezil: limited benefit in advanced illness, may cause GI side effects.\n";
+        }
+        if (medications.includes("aspirin")) {
+          recommendations += "- Review aspirin: weigh bleeding risk vs. benefit in primary prevention.\n";
+        }
+      }
+
+      if (!recommendations) {
+        recommendations = "No clear deprescribing recommendations based on current inputs. Consider individual patient factors.";
+      }
+
+      document.getElementById("output").textContent = recommendations;
+    }
+  </script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: auto;
+      padding: 20px;
+    }
+    h1 {
+      color: #00695c;
+    }
+    textarea, select, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+    }
+    #output {
+      white-space: pre-wrap;
+      margin-top: 20px;
+      background-color: #f1f1f1;
+      padding: 15px;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Deprescribing Compass - Pharmacist Tool</h1>
+
+  <label for="goals">Patient Goals of Care:</label>
+  <select id="goals">
+    <option value="comfort">Comfort-focused</option>
+    <option value="curative">Curative</option>
+    <option value="unclear">Unclear</option>
+  </select>
+
+  <label for="prognosis">Prognosis:</label>
+  <select id="prognosis">
+    <option value="poor">Poor (&lt; 6 months)</option>
+    <option value="moderate">Moderate (6-24 months)</option>
+    <option value="good">Good (&gt; 2 years)</option>
+  </select>
+
+  <label for="medications">Enter Medication List (comma-separated):</label>
+  <textarea id="medications" rows="4" placeholder="e.g., atorvastatin, donepezil, aspirin"></textarea>
+
+  <button onclick="checkDeprescribing()">Check Deprescribing Recommendations</button>
+
+  <div id="output"></div>
+</body>
+</html>
