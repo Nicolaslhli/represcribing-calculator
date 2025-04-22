@@ -4,6 +4,53 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Deprescribing Compass - Pharmacist Tool</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f8f9fa;
+      color: #333;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    h1 {
+      color: #2c3e50;
+      text-align: center;
+    }
+    .form-section {
+      background: #ffffff;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+      margin-bottom: 20px;
+    }
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 10px;
+    }
+    textarea, select, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    button {
+      background-color: #2c3e50;
+      color: white;
+      cursor: pointer;
+      margin-top: 15px;
+    }
+    #output {
+      white-space: pre-wrap;
+      background-color: #e9f5ec;
+      border-left: 5px solid #27ae60;
+      padding: 15px;
+      border-radius: 5px;
+      margin-top: 20px;
+    }
+  </style>
   <script>
     function checkDeprescribing() {
       const goals = document.getElementById("goals").value;
@@ -14,68 +61,50 @@
 
       if (goals === "comfort" && prognosis === "poor") {
         if (medications.includes("atorvastatin")) {
-          recommendations += "- Consider deprescribing atorvastatin: no short-term benefit, potential for adverse effects.\n";
+          recommendations += "\u2022 Atorvastatin: Consider deprescribing. No cardiovascular benefit in patients with < 1 year life expectancy. May cause muscle pain or weakness. (eTG)\n\n";
         }
         if (medications.includes("donepezil")) {
-          recommendations += "- Consider deprescribing donepezil: limited benefit in advanced illness, may cause GI side effects.\n";
+          recommendations += "\u2022 Donepezil: Consider gradual tapering. Limited cognitive benefit in end-stage dementia. May cause GI upset. (MATCH-D Criteria)\n\n";
         }
         if (medications.includes("aspirin")) {
-          recommendations += "- Review aspirin: weigh bleeding risk vs. benefit in primary prevention.\n";
+          recommendations += "\u2022 Aspirin: Reassess indication for primary prevention. Risk of GI bleeding may outweigh benefit in palliative care. (AMH)\n\n";
+        }
+        if (medications.includes("ssri")) {
+          recommendations += "\u2022 SSRI (e.g., sertraline, escitalopram): Taper slowly over weeks/months. Avoid abrupt cessation to reduce withdrawal symptoms. (Maudsley Guidelines)\n\n";
         }
       }
 
       if (!recommendations) {
-        recommendations = "No clear deprescribing recommendations based on current inputs. Consider individual patient factors.";
+        recommendations = "No specific deprescribing alerts for current inputs. Please assess medications individually and refer to clinical judgment.";
       }
 
       document.getElementById("output").textContent = recommendations;
     }
   </script>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      max-width: 600px;
-      margin: auto;
-      padding: 20px;
-    }
-    h1 {
-      color: #00695c;
-    }
-    textarea, select, button {
-      width: 100%;
-      padding: 10px;
-      margin-top: 10px;
-    }
-    #output {
-      white-space: pre-wrap;
-      margin-top: 20px;
-      background-color: #f1f1f1;
-      padding: 15px;
-      border-radius: 5px;
-    }
-  </style>
 </head>
 <body>
-  <h1>Deprescribing Compass - Pharmacist Tool</h1>
+  <h1>Deprescribing Compass</h1>
 
-  <label for="goals">Patient Goals of Care:</label>
-  <select id="goals">
-    <option value="comfort">Comfort-focused</option>
-    <option value="curative">Curative</option>
-    <option value="unclear">Unclear</option>
-  </select>
+  <div class="form-section">
+    <label for="goals">Patient Goals of Care:</label>
+    <select id="goals">
+      <option value="comfort">Comfort-focused</option>
+      <option value="curative">Curative</option>
+      <option value="unclear">Unclear</option>
+    </select>
 
-  <label for="prognosis">Prognosis:</label>
-  <select id="prognosis">
-    <option value="poor">Poor (&lt; 6 months)</option>
-    <option value="moderate">Moderate (6-24 months)</option>
-    <option value="good">Good (&gt; 2 years)</option>
-  </select>
+    <label for="prognosis">Prognosis:</label>
+    <select id="prognosis">
+      <option value="poor">Poor (&lt; 6 months)</option>
+      <option value="moderate">Moderate (6-24 months)</option>
+      <option value="good">Good (&gt; 2 years)</option>
+    </select>
 
-  <label for="medications">Enter Medication List (comma-separated):</label>
-  <textarea id="medications" rows="4" placeholder="e.g., atorvastatin, donepezil, aspirin"></textarea>
+    <label for="medications">Enter Medication List (comma-separated):</label>
+    <textarea id="medications" rows="4" placeholder="e.g., atorvastatin, donepezil, aspirin, SSRI"></textarea>
 
-  <button onclick="checkDeprescribing()">Check Deprescribing Recommendations</button>
+    <button onclick="checkDeprescribing()">Get Deprescribing Recommendations</button>
+  </div>
 
   <div id="output"></div>
 </body>
