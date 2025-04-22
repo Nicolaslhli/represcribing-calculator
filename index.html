@@ -4,51 +4,75 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Deprescribing Compass - Pharmacist Tool</title>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
   <style>
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #f8f9fa;
+      font-family: 'Quicksand', sans-serif;
+      background: linear-gradient(to right, #c2e9fb, #a1c4fd);
       color: #333;
       max-width: 800px;
       margin: 0 auto;
       padding: 20px;
     }
     h1 {
-      color: #2c3e50;
+      color: #1e3a8a;
       text-align: center;
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+      animation: fadeInDown 1s ease-out;
+    }
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
     .form-section {
       background: #ffffff;
-      border-radius: 10px;
-      padding: 20px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
       margin-bottom: 20px;
+      animation: fadeInUp 1s ease-out;
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
     label {
-      font-weight: bold;
+      font-weight: 600;
       display: block;
-      margin-top: 10px;
+      margin-top: 15px;
     }
     textarea, select, button {
       width: 100%;
-      padding: 10px;
-      margin-top: 5px;
-      border-radius: 5px;
+      padding: 12px;
+      margin-top: 8px;
+      border-radius: 8px;
       border: 1px solid #ccc;
+      font-size: 1rem;
     }
     button {
-      background-color: #2c3e50;
+      background-color: #1e3a8a;
       color: white;
+      font-weight: bold;
       cursor: pointer;
-      margin-top: 15px;
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background-color: #3b82f6;
     }
     #output {
       white-space: pre-wrap;
-      background-color: #e9f5ec;
-      border-left: 5px solid #27ae60;
-      padding: 15px;
-      border-radius: 5px;
+      background-color: #f0fdf4;
+      border-left: 5px solid #22c55e;
+      padding: 20px;
+      border-radius: 10px;
       margin-top: 20px;
+      font-size: 1.1rem;
+      animation: fadeIn 0.5s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
     }
   </style>
   <script>
@@ -57,25 +81,25 @@
       const prognosis = document.getElementById("prognosis").value;
       const medications = document.getElementById("medications").value.toLowerCase();
 
-      let recommendations = "";
+      let recommendations = "\u2728 Deprescribing Recommendations:\n\n";
 
       if (goals === "comfort" && prognosis === "poor") {
         if (medications.includes("atorvastatin")) {
-          recommendations += "\u2022 Atorvastatin: Consider deprescribing. No cardiovascular benefit in patients with < 1 year life expectancy. May cause muscle pain or weakness. (eTG)\n\n";
+          recommendations += "\u2022 \u2696 Atorvastatin: Consider deprescribing. No cardiovascular benefit in patients with < 1 year life expectancy. May cause muscle pain or weakness. (eTG)\n\n";
         }
         if (medications.includes("donepezil")) {
-          recommendations += "\u2022 Donepezil: Consider gradual tapering. Limited cognitive benefit in end-stage dementia. May cause GI upset. (MATCH-D Criteria)\n\n";
+          recommendations += "\u2022 \u2696 Donepezil: Consider gradual tapering. Limited cognitive benefit in end-stage dementia. May cause GI upset. (MATCH-D Criteria)\n\n";
         }
         if (medications.includes("aspirin")) {
-          recommendations += "\u2022 Aspirin: Reassess indication for primary prevention. Risk of GI bleeding may outweigh benefit in palliative care. (AMH)\n\n";
+          recommendations += "\u2022 \u2696 Aspirin: Reassess indication for primary prevention. Risk of GI bleeding may outweigh benefit in palliative care. (AMH)\n\n";
         }
         if (medications.includes("ssri")) {
-          recommendations += "\u2022 SSRI (e.g., sertraline, escitalopram): Taper slowly over weeks/months. Avoid abrupt cessation to reduce withdrawal symptoms. (Maudsley Guidelines)\n\n";
+          recommendations += "\u2022 \u2696 SSRI (e.g., sertraline, escitalopram): Taper slowly over weeks/months. Avoid abrupt cessation to reduce withdrawal symptoms. (Maudsley Guidelines)\n\n";
         }
       }
 
-      if (!recommendations) {
-        recommendations = "No specific deprescribing alerts for current inputs. Please assess medications individually and refer to clinical judgment.";
+      if (recommendations === "\u2728 Deprescribing Recommendations:\n\n") {
+        recommendations += "No specific deprescribing alerts based on your entries. Please use clinical judgment and refer to current guidelines.";
       }
 
       document.getElementById("output").textContent = recommendations;
@@ -83,7 +107,7 @@
   </script>
 </head>
 <body>
-  <h1>Deprescribing Compass</h1>
+  <h1>✨ Deprescribing Compass ✨</h1>
 
   <div class="form-section">
     <label for="goals">Patient Goals of Care:</label>
@@ -103,7 +127,7 @@
     <label for="medications">Enter Medication List (comma-separated):</label>
     <textarea id="medications" rows="4" placeholder="e.g., atorvastatin, donepezil, aspirin, SSRI"></textarea>
 
-    <button onclick="checkDeprescribing()">Get Deprescribing Recommendations</button>
+    <button onclick="checkDeprescribing()">Get Recommendations ✨</button>
   </div>
 
   <div id="output"></div>
