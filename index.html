@@ -81,7 +81,7 @@
       const prognosis = document.getElementById("prognosis").value;
       const medications = document.getElementById("medications").value.toLowerCase().split(",").map(med => med.trim());
 
-      let recommendations = "\u2728 Deprescribing Recommendations:\n\n";
+      let recommendations = `✨ Deprescribing Recommendations based on Goals of Care: ${goals} and Prognosis: ${prognosis}\n\n`;
 
       const classData = {
         "statin": {
@@ -174,7 +174,7 @@
         });
       });
 
-      if (recommendations === "\u2728 Deprescribing Recommendations:\n\n") {
+      if (recommendations === `✨ Deprescribing Recommendations based on Goals of Care: ${goals} and Prognosis: ${prognosis}\n\n`) {
         recommendations += "No specific deprescribing alerts found. Please refer to clinical judgment and local guidelines.";
       }
 
@@ -185,8 +185,23 @@
 <body>
   <h1>Deprescribing Compass - Pharmacist Tool</h1>
   <div class="form-section">
+    <label for="goals">Goals of Care:</label>
+    <select id="goals">
+      <option value="Symptom control">Symptom control</option>
+      <option value="Life extension">Life extension</option>
+      <option value="Functional improvement">Functional improvement</option>
+    </select>
+
+    <label for="prognosis">Prognosis (Life Expectancy):</label>
+    <select id="prognosis">
+      <option value="Limited (<1 year)">Limited (<1 year)</option>
+      <option value="Moderate (1-5 years)">Moderate (1-5 years)</option>
+      <option value="Good (>5 years)">Good (>5 years)</option>
+    </select>
+
     <label for="medications">Enter Medications (comma separated):</label>
     <textarea id="medications" rows="3"></textarea>
+
     <button onclick="checkDeprescribing()">Check Deprescribing</button>
   </div>
   <div id="output"></div>
